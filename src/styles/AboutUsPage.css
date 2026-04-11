@@ -1,0 +1,255 @@
+/* Purrsona About Page */
+
+.about-us-page {
+  background: linear-gradient(135deg, #f8f7ff 0%, #fff 100%);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero */
+.about-hero {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  padding: 80px 20px;
+  text-align: center;
+  color: white;
+}
+
+.about-hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.about-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* Sections */
+.about-section {
+  padding: 60px 20px;
+}
+
+.alt-bg {
+  background: rgba(124, 58, 237, 0.03);
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: #1a1a2e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.section-text {
+  font-size: 1.1rem;
+  color: #4b5563;
+  line-height: 1.8;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Values Grid */
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.value-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.value-card h3 {
+  font-size: 1.1rem;
+  color: #7c3aed;
+  margin-bottom: 10px;
+}
+
+.value-card p {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Stats */
+.about-stats {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  padding: 60px 20px;
+  color: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* About Page Mobile Responsive */
+
+/* Hero - Mobile */
+@media (max-width: 768px) {
+  .about-hero {
+    padding: 50px 20px 40px;
+  }
+
+  .about-hero-content h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .about-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero {
+    padding: 40px 15px 35px;
+  }
+
+  .about-hero-content h1 {
+    font-size: 1.7rem;
+  }
+
+  .about-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Sections - Mobile */
+@media (max-width: 768px) {
+  .about-section {
+    padding: 40px 20px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  .section-text {
+    font-size: 1rem;
+    text-align: left;
+    line-height: 1.7;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .value-card {
+    padding: 20px;
+  }
+
+  .value-card h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .value-card p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-section {
+    padding: 30px 15px;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .section-text {
+    font-size: 0.95rem;
+  }
+
+  .value-card {
+    padding: 18px 15px;
+  }
+}
+
+/* Stats - Mobile */
+@media (max-width: 768px) {
+  .about-stats {
+    padding: 40px 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-top: 25px;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-stats {
+    padding: 30px 15px;
+  }
+
+  .stats-grid {
+    gap: 20px;
+  }
+
+  .stat-number {
+    font-size: 1.8rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .about-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+}
