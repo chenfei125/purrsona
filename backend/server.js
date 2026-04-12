@@ -1,12 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const PAYPAL_BASE_URL = process.env.PAYPAL_BASE_URL || 'https://api-m.sandbox.paypal.com';
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
 
 // 支持多域名 CORS
 const getAllowedOrigins = () => {
@@ -23,14 +25,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS 配置：支持多域名
-app.use(cors({
+// CORS 配置：支持多域名 + Vercel 预览域名
+const corsOptions = {
   origin: function (origin, callback) {
     // 允许无 origin 的请求（如 Postman、本地 curl）
     if (!origin) return callback(null, true);
     
     const allowedOrigins = getAllowedOrigins();
+    
+    // 检查精确匹配
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // 允许所有 Vercel 预览域名 (purrsona-*.vercel.app)
+    if (origin.match(/^https:\/\/purrsona-[a-z0-9-]+\.vercel\.app$/)) {
       return callback(null, true);
     }
     
@@ -40,7 +49,14 @@ app.use(cors({
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+
+// 显式处理 OPTIONS 预检请求 - 使用具体路径
+app.options('/api/stripe/create-checkout-session', cors(corsOptions));
+app.options('/api/stripe/verify-session/:sessionId', cors(corsOptions));
+
 app.use(express.json());
 
 // ─── PayPal Helper ────────────────────────────────────────────────────────────
@@ -73,7 +89,92 @@ async function getPayPalAccessToken() {
 
 // 1. 健康检查
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, env: PAYPAL_BASE_URL.includes('sandbox') ? 'sandbox' : 'live' });
+  res.json({ 
+    ok: true, 
+    env: PAYPAL_BASE_URL.includes('sandbox') ? 'sandbox' : 'live',
+    stripe: STRIPE_PUBLISHABLE_KEY ? 'configured' : 'not configured'
+  });
+});
+
+// ─── Stripe Routes ────────────────────────────────────────────────────────────
+
+// 获取 Stripe Publishable Key
+app.get('/api/stripe/config', (req, res) => {
+  res.json({ publishableKey: STRIPE_PUBLISHABLE_KEY });
+});
+
+// 创建 Stripe Checkout Session
+app.post('/api/stripe/create-checkout-session', async (req, res) => {
+  const { resultId } = req.body;
+
+  if (!resultId) {
+    return res.status(400).json({ success: false, error: 'resultId is required' });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Purrsona Full Cat Report',
+              description: 'Complete personality analysis for your cat',
+            },
+            unit_amount: 199, // $1.99 in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${FRONTEND_URL}/results?resultId=${resultId}&payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${FRONTEND_URL}/results?resultId=${resultId}&payment=cancelled`,
+      metadata: {
+        resultId: resultId,
+      },
+    });
+
+    console.log(`[stripe-create-session] resultId=${resultId} sessionId=${session.id}`);
+    return res.json({ success: true, sessionId: session.id, url: session.url });
+  } catch (err) {
+    console.error('[stripe-create-session] error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 验证 Stripe Checkout Session
+app.get('/api/stripe/verify-session/:sessionId', async (req, res) => {
+  const { sessionId } = req.params;
+
+  if (!sessionId) {
+    return res.status(400).json({ success: false, error: 'sessionId is required' });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    
+    console.log(`[stripe-verify-session] sessionId=${sessionId} status=${session.payment_status}`);
+    
+    if (session.payment_status === 'paid') {
+      return res.json({
+        success: true,
+        paid: true,
+        resultId: session.metadata.resultId,
+        sessionId: session.id,
+        amount: session.amount_total,
+      });
+    } else {
+      return res.json({
+        success: true,
+        paid: false,
+        status: session.payment_status,
+      });
+    }
+  } catch (err) {
+    console.error('[stripe-verify-session] error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // 1.5 获取订单详情（包含审批链接，用于测试）

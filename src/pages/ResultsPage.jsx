@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { getLang } from '../i18n';
 import { getCurrentReport, unlockReport, getCurrentResultId } from '../utils/reportStorage';
-import PayPalButton from '../components/PayPalButton';
+import StripePayment from '../components/StripePayment';
 import '../styles/ResultsPage.css';
 
 const ResultsPage = () => {
@@ -12,6 +12,7 @@ const ResultsPage = () => {
   const [unlockSuccess, setUnlockSuccess] = useState(false);
   const [, setUpdate] = useState(0);
   const lang = getLang();
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
   // 加载当前报告
   useEffect(() => {
@@ -47,6 +48,34 @@ const ResultsPage = () => {
       setTimeout(() => setUnlockSuccess(false), 4000);
     }
   };
+
+  // Stripe 支付成功验证
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const payment = urlParams.get('payment');
+    const sessionId = urlParams.get('session_id');
+
+    if (payment === 'success' && sessionId) {
+      // 验证 Stripe session
+      fetch(`${API_BASE_URL}/api/stripe/verify-session/${sessionId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.paid) {
+            // 解锁报告
+            unlockReport(data.resultId);
+            // 重新加载报告
+            const report = getCurrentReport();
+            setCurrentReport(report);
+            setIsUnlocked(true);
+            setUnlockSuccess(true);
+            setTimeout(() => setUnlockSuccess(false), 4000);
+            // 清除 URL 参数
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        })
+        .catch(err => console.error('Stripe verification error:', err));
+    }
+  }, [API_BASE_URL]);
 
   // 类型名称翻译
   const getTypeName = (catType) => {
@@ -215,9 +244,9 @@ const ResultsPage = () => {
                 <span className="discount-tag">80% OFF</span>
               </div>
 
-              {/* PayPal 按钮 */}
-              <div style={{ margin: '20px 0 15px', textAlign: 'center' }}>
-                <PayPalButton resultId={resultId} onSuccess={handlePayPalSuccess} />
+              {/* Stripe 支付 */}
+              <div style={{ margin: '20px 0 20px' }}>
+                <StripePayment resultId={resultId} onSuccess={handlePayPalSuccess} />
               </div>
 
               {/* 解锁范围说明 */}
