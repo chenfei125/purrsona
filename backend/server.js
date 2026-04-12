@@ -25,14 +25,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS 配置：支持多域名
+// CORS 配置：支持多域名 + Vercel 预览域名
 const corsOptions = {
   origin: function (origin, callback) {
     // 允许无 origin 的请求（如 Postman、本地 curl）
     if (!origin) return callback(null, true);
     
     const allowedOrigins = getAllowedOrigins();
+    
+    // 检查精确匹配
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // 允许所有 Vercel 预览域名 (purrsona-*.vercel.app)
+    if (origin.match(/^https:\/\/purrsona-[a-z0-9-]+\.vercel\.app$/)) {
       return callback(null, true);
     }
     
@@ -46,8 +53,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// 显式处理 OPTIONS 预检请求
-app.options('*', cors(corsOptions));
+// 显式处理 OPTIONS 预检请求 - 使用具体路径
+app.options('/api/stripe/create-checkout-session', cors(corsOptions));
+app.options('/api/stripe/verify-session/:sessionId', cors(corsOptions));
 
 app.use(express.json());
 
