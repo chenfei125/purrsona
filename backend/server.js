@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 // CORS 配置：支持多域名
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     // 允许无 origin 的请求（如 Postman、本地 curl）
     if (!origin) return callback(null, true);
@@ -42,7 +42,13 @@ app.use(cors({
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+
+// 显式处理 OPTIONS 预检请求
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 
 // ─── PayPal Helper ────────────────────────────────────────────────────────────
