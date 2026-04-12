@@ -1,0 +1,51 @@
+.purrsona-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 4px rgba(124, 58, 237, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.purrsona-logo:hover .logo-icon {
+  transform: scale(1.05);
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.logo-text-main {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.logo-small .logo-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.logo-small .logo-text-main {
+  font-size: 1.2rem;
+}
+
+.logo-large .logo-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.logo-large .logo-text-main {
+  font-size: 2rem;
+}

@@ -1,0 +1,84 @@
+/* Purrsona Terms of Service Page */
+
+.terms-page {
+  background: linear-gradient(135deg, #f8f7ff 0%, #fff 100%);
+  min-height: 100vh;
+}
+
+/* Header */
+.terms-header {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  padding: 60px 20px;
+  text-align: center;
+  color: white;
+}
+
+.terms-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.terms-updated {
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+
+/* Content */
+.terms-content {
+  padding: 50px 20px 80px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.terms-card {
+  background: white;
+  border-radius: 20px;
+  padding: 50px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Section */
+.terms-section {
+  margin-bottom: 35px;
+  padding-bottom: 35px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.terms-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.terms-section-heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #7c3aed;
+  margin-bottom: 12px;
+}
+
+.terms-section-body {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .terms-title {
+    font-size: 1.8rem;
+  }
+
+  .terms-card {
+    padding: 25px 20px;
+  }
+
+  .terms-section-heading {
+    font-size: 1.05rem;
+  }
+
+  .terms-section-body {
+    font-size: 0.95rem;
+  }
+}
